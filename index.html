@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>業務フロー作成ツール｜さくら通り整形外科クリニック</title>
+<style>
+:root{
+  --bg:#f4f2ec; --panel:#fff; --line:#e2ddd2; --ink:#3a3632; --sub:#6e6558;
+  --accent:#8a6a4e; --accent-d:#6e5238; --soft:#f7f4ee;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;line-height:1.7;font-size:15px}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+
+.wrap{max-width:1400px;margin:0 auto;padding:0 16px 60px}
+header.top{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 0;margin-bottom:18px}
+.top-in{max-width:1400px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;line-height:1.3}
+.brand b{font-size:17px;letter-spacing:.04em}
+.brand span{font-size:11px;letter-spacing:.18em;color:#9b948a}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:#fff;border-radius:8px 8px 0 0;padding:9px 20px;cursor:pointer;font-weight:700;font-size:13.5px;color:var(--sub)}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.cols{display:grid;grid-template-columns:minmax(340px,440px) 1fr;gap:20px;align-items:start}
+.cols>*{min-width:0}
+@media (max-width:1000px){.cols{grid-template-columns:minmax(0,1fr)}}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.panel + .panel{margin-top:16px}
+.panel-t{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
+
+label{display:block;font-size:12.5px;font-weight:700;color:var(--sub);margin-bottom:5px;letter-spacing:.04em}
+input[type=text],select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff}
+textarea{resize:vertical;min-height:64px;line-height:1.7}
+input:focus,select:focus,textarea:focus{outline:2px solid #d8c7b2;outline-offset:1px;border-color:var(--accent)}
+.f{margin-bottom:12px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:520px){.f2{grid-template-columns:1fr}}
+
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 14px;cursor:pointer;font-weight:700;font-size:13.5px;transition:.15s}
+.btn:hover{background:var(--soft);border-color:var(--accent)}
+.btn-p{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-p:hover{background:var(--accent-d);color:#fff}
+.btn-s{padding:6px 10px;font-size:12.5px;font-weight:500}
+.btn-d{color:#b34a4a}
+.btn-d:hover{background:#fdf1f1;border-color:#e0b8b8}
+.btn[disabled]{opacity:.35;cursor:not-allowed}
+
+#list{display:flex;flex-direction:column;gap:8px}
+.item{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+.item.sel{border-color:var(--accent);box-shadow:0 0 0 2px #ead9c4}
+.item-h{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer}
+.item-h:hover{background:var(--soft)}
+.tag{flex:none;font-size:11px;font-weight:700;color:#fff;border-radius:20px;padding:3px 10px;letter-spacing:.06em;white-space:nowrap}
+.item-tt{flex:1 1 auto;min-width:0;font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-who{flex:none;font-size:11.5px;color:var(--sub);background:var(--soft);border-radius:20px;padding:2px 9px;white-space:nowrap}
+.item-ops{flex:none;display:flex;gap:3px}
+.iop{border:0;background:transparent;cursor:pointer;padding:3px 6px;border-radius:6px;color:var(--sub);font-size:13px}
+.iop:hover{background:#eee7db;color:var(--ink)}
+.item-b{border-top:1px solid var(--line);padding:14px 12px;background:#fcfbf8}
+.empty{border:2px dashed var(--line);border-radius:12px;padding:34px 20px;text-align:center;color:var(--sub);font-size:14px}
+
+#prevWrap{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px}
+.doc-h{border-bottom:2px solid var(--ink);padding-bottom:12px}
+.doc-h h2{font-size:21px;font-weight:700;letter-spacing:.04em}
+.doc-meta{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:12.5px;color:var(--sub);margin-top:8px}
+.flow{margin-top:26px;display:flex;flex-direction:column;align-items:center}
+.node{width:100%;max-width:600px;border:2px solid;border-radius:10px;background:#fff;padding:14px 18px}
+.node.sh-round{border-radius:40px;text-align:center}
+.node.sh-dashed{border-style:dashed}
+.node-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.node-n{flex:none;width:24px;height:24px;border-radius:50%;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.node-t{font-weight:700;font-size:15.5px;flex:1 1 auto;min-width:0}
+.node-w{flex:none;font-size:11.5px;font-weight:700;color:var(--sub);background:var(--soft);border:1px solid var(--line);border-radius:20px;padding:2px 10px}
+.node-d{font-size:13.5px;color:#514b43;margin-top:8px;line-height:1.85;white-space:pre-wrap}
+.branches{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+@media (max-width:520px){.branches{grid-template-columns:1fr}}
+.br{border-radius:8px;padding:9px 12px;font-size:13px;line-height:1.7;border:1px solid}
+.br-y{background:#f0f7f3;border-color:#cfe4d8}
+.br-n{background:#fdf6ef;border-color:#eeddc6}
+.br b{font-size:11.5px;letter-spacing:.08em;display:block;margin-bottom:2px}
+.br-y b{color:#3d7a5c}.br-n b{color:#b0802a}
+.arrow{width:2px;height:26px;background:#c4b49f;position:relative;flex:none}
+.arrow::after{content:"";position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#c4b49f}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--sub)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.doc-f{margin-top:20px;font-size:11.5px;color:var(--sub);line-height:1.8;border-top:1px solid var(--line);padding-top:12px}
+
+.warn{background:#fdf6ef;border:1px solid #eeddc6;border-left:4px solid #c8952f;border-radius:8px;padding:12px 16px;font-size:13px;line-height:1.8;color:#6b5a33;margin-bottom:16px}
+.warn b{color:#8a6a1f}
+.info{background:#f3f7fb;border:1px solid #d7e4ef;border-left:4px solid #4a7fa5;border-radius:8px;padding:14px 18px;font-size:13.5px;line-height:1.9;color:#40566b;margin-bottom:16px}
+.info b{color:#2f5675}
+.info code{background:#fff;border:1px solid #d7e4ef;border-radius:4px;padding:1px 6px;font-size:12.5px}
+
+.row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.row input[type=text]{flex:1 1 auto;min-width:0}
+.row .sw{flex:none;width:44px;padding:4px;height:38px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.row select{flex:none;width:110px}
+.tplrow{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;background:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tplrow b{flex:1 1 auto;min-width:0}
+.tplrow span{font-size:12.5px;color:var(--sub)}
+
+dialog{border:0;border-radius:12px;padding:0;max-width:min(680px,92vw);width:100%;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+dialog::backdrop{background:rgba(58,54,50,.45)}
+.dlg{padding:22px}
+.dlg h3{font-size:16px;margin-bottom:12px}
+.dlg textarea{min-height:230px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+.dlg-f{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.hint{font-size:12.5px;color:var(--sub);line-height:1.8;margin-bottom:10px}
+
+@media print{
+  @page{size:A4 portrait;margin:14mm}
+  body{background:#fff;font-size:11pt}
+  header.top,.editor,.warn,.info,.tabs,.noprint{display:none!important}
+  .cols{display:block}
+  .wrap{padding:0;max-width:none}
+  #prevWrap{border:0;border-radius:0;padding:0}
+  .node{break-inside:avoid;page-break-inside:avoid;max-width:none}
+  .doc-h h2{font-size:16pt}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <b>業務フロー作成ツール</b>
+      <span>SAKURA-DORI CLINIC / WORKFLOW BUILDER</span>
+    </div>
+    <div class="top-actions">
+      <button class="btn" id="btnTpl">テンプレート</button>
+      <button class="btn" id="btnMermaid">Mermaid出力</button>
+      <button class="btn" id="btnJson">保存 / 読込</button>
+      <button class="btn btn-p" id="btnPrint">印刷・PDF</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="tabs noprint">
+    <button class="tab on" data-tab="flow">フロー作成</button>
+    <button class="tab" data-tab="conf">設定（項目の追加・編集）</button>
+  </div>
+
+  <!-- ================= フロー作成 ================= -->
+  <div id="tab-flow">
+    <div class="warn noprint">
+      <b>患者さんの個人情報は入力しないでください。</b><br>
+      氏名・カルテ番号・生年月日・住所・電話番号・診療記録などは入力対象外です。入力内容はこのブラウザ内にのみ保存され、サーバーには送信されません。
+    </div>
+
+    <div class="cols">
+      <div class="editor">
+        <div class="panel">
+          <div class="panel-t">基本情報</div>
+          <div class="f"><label for="mTitle">業務名</label><input type="text" id="mTitle" placeholder="例：初診の受付業務"></div>
+          <div class="f2">
+            <div class="f"><label for="mDept">担当部署</label><input type="text" id="mDept" placeholder="例：受付"></div>
+            <div class="f"><label for="mVer">版</label><input type="text" id="mVer" placeholder="例：1.0"></div>
+          </div>
+          <div class="f2">
+            <div class="f"><label for="mDate">作成・改訂日</label><input type="text" id="mDate" placeholder="例：2026-08-12"></div>
+            <div class="f"><label for="mAuthor">作成者</label><input type="text" id="mAuthor" placeholder="例：西田"></div>
+          </div>
+          <div class="f" style="margin-bottom:0"><label for="mPurpose">目的・適用範囲</label><textarea id="mPurpose" placeholder="例：初めて来院された方の受付から診察までの手順を統一し、待ち時間と確認漏れを減らす。"></textarea></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-t">工程</div>
+          <div id="list"></div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <button class="btn btn-p" id="btnAdd">＋ 工程を追加</button>
+            <button class="btn btn-s btn-d" id="btnClear">すべて削除</button>
+          </div>
+        </div>
+      </div>
+
+      <div><div id="prevWrap"></div></div>
+    </div>
+  </div>
+
+  <!-- ================= 設定 ================= -->
+  <div id="tab-conf" style="display:none">
+    <div class="info">
+      <b>この画面で変えた内容は、このブラウザにだけ保存されます。</b><br>
+      全員の初期設定にしたい場合は、下の「設定を書き出す」で出てくる内容を、GitHub上の <code>config.js</code> にまるごと貼り替えてください。手順はREADMEに書いてあります。
+    </div>
+
+    <div class="cols">
+      <div>
+        <div class="panel">
+          <div class="panel-t">工程の種類</div>
+          <p class="hint">色・表示名・形（角丸／通常／破線）を変更できます。</p>
+          <div id="confTypes"></div>
+          <button class="btn btn-s" id="addType">＋ 種類を追加</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-t">担当者の候補</div>
+          <p class="hint">工程の「担当」欄に候補として出てきます。自由入力もできます。</p>
+          <div id="confWho"></div>
+          <button class="btn btn-s" id="addWho">＋ 担当者を追加</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <div class="panel-t">テンプレート</div>
+          <p class="hint">いま編集中のフローを、新しいテンプレートとして登録できます。</p>
+          <div id="confTpl"></div>
+          <button class="btn btn-p btn-s" id="addTpl" style="margin-top:8px">＋ 編集中のフローをテンプレートに登録</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-t">設定の書き出し・初期化</div>
+          <p class="hint">「設定を書き出す」を押すと、<code>config.js</code> に貼り付ける内容が出てきます。</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-p" id="btnExportConf">設定を書き出す</button>
+            <button class="btn btn-d" id="btnResetConf">初期設定に戻す</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= ダイアログ ================= -->
+<dialog id="dlgTpl"><div class="dlg">
+  <h3>テンプレートから作成</h3>
+  <p class="hint">現在の内容は置き換わります。必要なら先に「保存 / 読込」で控えてください。</p>
+  <div id="tplList" style="display:flex;flex-direction:column;gap:8px"></div>
+  <div class="dlg-f"><button class="btn" data-close>閉じる</button></div>
+</div></dialog>
+
+<dialog id="dlgJson"><div class="dlg">
+  <h3>保存 / 読込（JSON）</h3>
+  <p class="hint">この内容を保管しておけば、あとで貼り付けて復元できます。</p>
+  <textarea id="jsonArea" spellcheck="false"></textarea>
+  <div class="dlg-f">
+    <button class="btn" id="btnDl">ファイルに保存</button>
+    <button class="btn" id="btnUp">ファイルから読込</button>
+    <button class="btn btn-p" id="btnLoadJson">貼り付けた内容を読み込む</button>
+    <button class="btn" data-close>閉じる</button>
+  </div>
+</div></dialog>
+
+<dialog id="dlgMmd"><div class="dlg">
+  <h3>Mermaid記法で出力</h3>
+  <p class="hint">Notion・GitHub・Claudeなどに貼り付けると図として表示されます。</p>
+  <textarea id="mmdArea" spellcheck="false" readonly></textarea>
+  <div class="dlg-f"><button class="btn btn-p" id="btnCopyMmd">コピー</button><button class="btn" data-close>閉じる</button></div>
+</div></dialog>
+
+<dialog id="dlgConf"><div class="dlg">
+  <h3>config.js に貼り付ける内容</h3>
+  <p class="hint">GitHubで <code>config.js</code> を開き、<b>中身をすべて消して</b>この内容を貼り付け、Commit changes を押してください。</p>
+  <textarea id="confArea" spellcheck="false" readonly></textarea>
+  <div class="dlg-f"><button class="btn btn-p" id="btnCopyConf">コピー</button><button class="btn" id="btnDlConf">ファイルに保存</button><button class="btn" data-close>閉じる</button></div>
+</div></dialog>
+
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+
+<script>
+/* config.js はブラウザにキャッシュされると編集内容が反映されないため、
+   毎回新しく読み込む。読み込めなくても本体は起動する。 */
+(function(){
+  var s=document.createElement("script");
+  /* file:// で開いた場合はクエリを付けない（ファイルが見つからなくなるため） */
+  s.src = (location.protocol==="file:") ? "config.js" : ("config.js?t="+Date.now());
+  s.onload=function(){ startApp(); };
+  s.onerror=function(){ startApp(); };
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+function startApp(){
+"use strict";
+
+var FALLBACK = { types:[{key:"start",label:"開始",hex:"#4a8f6d",shape:"round"},{key:"do",label:"作業",hex:"#4a7fa5",shape:"box"},{key:"check",label:"判断",hex:"#c8952f",shape:"dashed"},{key:"end",label:"終了",hex:"#6b6b6b",shape:"round"}], who:[], templates:[] };
+var KEY_DOC  = "sakura-flow-builder-v1";
+var KEY_CONF = "sakura-flow-builder-conf-v1";
+
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+function todayStr(){ var d=new Date(); function p(n){return (n<10?"0":"")+n;} return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
+
+var BASE = (typeof SAKURA_FLOW_CONFIG!=="undefined" && SAKURA_FLOW_CONFIG) ? SAKURA_FLOW_CONFIG : FALLBACK;
+var conf = clone(BASE);
+try{ var sc=localStorage.getItem(KEY_CONF); if(sc){ var p=JSON.parse(sc); if(p&&p.types&&p.types.length) conf=p; } }catch(e){}
+
+function typeOf(k){
+  for(var i=0;i<conf.types.length;i++) if(conf.types[i].key===k) return conf.types[i];
+  return conf.types[0] || {key:"x",label:"工程",hex:"#8a6a4e",shape:"box"};
+}
+function newStep(t){ return {type:t||(conf.types[0]&&conf.types[0].key)||"do",title:"",who:"",desc:"",yes:"",no:""}; }
+function isDecision(k){ var t=typeOf(k); return t.shape==="dashed"; }
+
+var state = { meta:{title:"",dept:"",ver:"1.0",date:todayStr(),author:"",purpose:""}, steps:[], sel:null };
+
+function saveDoc(){ try{ localStorage.setItem(KEY_DOC, JSON.stringify({meta:state.meta,steps:state.steps})); }catch(e){} }
+function saveConf(){ try{ localStorage.setItem(KEY_CONF, JSON.stringify(conf)); }catch(e){} }
+function loadDoc(){
+  try{
+    var raw=localStorage.getItem(KEY_DOC); if(!raw) return false;
+    var d=JSON.parse(raw); if(!d||!Array.isArray(d.steps)) return false;
+    state.meta=Object.assign(state.meta, d.meta||{});
+    state.steps=d.steps.map(function(s){ return Object.assign(newStep(), s); });
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ---------------- フロー編集 ---------------- */
+function renderList(){
+  var box=$("list");
+  if(!state.steps.length){ box.innerHTML='<div class="empty">工程がまだありません。<br>「＋ 工程を追加」またはテンプレートから始めてください。</div>'; return; }
+  var h="";
+  state.steps.forEach(function(s,i){
+    var t=typeOf(s.type), sel=(state.sel===i);
+    h += '<div class="item'+(sel?" sel":"")+'">';
+    h +=   '<div class="item-h" data-tog="'+i+'">';
+    h +=     '<span class="tag" style="background:'+t.hex+'">'+esc(t.label)+'</span>';
+    h +=     '<span class="item-tt">'+(s.title?esc(s.title):'<span style="color:#a99f90;font-weight:400">（工程名を入力）</span>')+'</span>';
+    h +=     (s.who?'<span class="item-who">'+esc(s.who)+'</span>':'');
+    h +=     '<span class="item-ops"><button class="iop" data-up="'+i+'"'+(i===0?" disabled":"")+'>▲</button><button class="iop" data-dn="'+i+'"'+(i===state.steps.length-1?" disabled":"")+'>▼</button><button class="iop" data-del="'+i+'">✕</button></span>';
+    h +=   '</div>';
+    if(sel){
+      h += '<div class="item-b">';
+      h +=   '<div class="f2"><div class="f"><label>種類</label><select data-f="type" data-i="'+i+'">';
+      conf.types.forEach(function(t2){ h += '<option value="'+esc(t2.key)+'"'+(s.type===t2.key?" selected":"")+'>'+esc(t2.label)+'</option>'; });
+      h +=   '</select></div>';
+      h +=   '<div class="f"><label>担当</label><input type="text" list="whoList" data-f="who" data-i="'+i+'" value="'+esc(s.who)+'" placeholder="例：受付"></div></div>';
+      h +=   '<div class="f"><label>工程名</label><input type="text" data-f="title" data-i="'+i+'" value="'+esc(s.title)+'" placeholder="例：問診票をお渡しする"></div>';
+      h +=   '<div class="f"><label>手順・注意点</label><textarea data-f="desc" data-i="'+i+'" placeholder="具体的な手順や気をつけることを書きます。">'+esc(s.desc)+'</textarea></div>';
+      if(isDecision(s.type)){
+        h += '<div class="f2" style="margin-bottom:0"><div class="f" style="margin-bottom:0"><label>はい の場合</label><input type="text" data-f="yes" data-i="'+i+'" value="'+esc(s.yes)+'" placeholder="例：次の工程へ進む"></div>';
+        h += '<div class="f" style="margin-bottom:0"><label>いいえ の場合</label><input type="text" data-f="no" data-i="'+i+'" value="'+esc(s.no)+'" placeholder="例：担当者に確認する"></div></div>';
+      }
+      h += '</div>';
+    }
+    h += '</div>';
+  });
+  box.innerHTML=h;
+}
+
+function renderPreview(){
+  var m=state.meta;
+  var h='<div class="doc-h"><h2>'+(m.title?esc(m.title):"（業務名が未入力です）")+'</h2><div class="doc-meta">';
+  if(m.dept)   h+='<span>担当部署：'+esc(m.dept)+'</span>';
+  if(m.author) h+='<span>作成者：'+esc(m.author)+'</span>';
+  if(m.date)   h+='<span>作成・改訂日：'+esc(m.date)+'</span>';
+  if(m.ver)    h+='<span>版：'+esc(m.ver)+'</span>';
+  h+='<span>医療法人Eternabloom さくら通り整形外科クリニック</span></div></div>';
+  if(m.purpose) h+='<p style="margin-top:14px;font-size:13.5px;line-height:1.9;color:#514b43">'+esc(m.purpose).replace(/\n/g,"<br>")+'</p>';
+
+  h+='<div class="flow">';
+  if(!state.steps.length) h+='<div class="empty" style="width:100%">工程を追加すると、ここにフロー図が表示されます。</div>';
+  state.steps.forEach(function(s,i){
+    var t=typeOf(s.type);
+    if(i>0) h+='<div class="arrow"></div>';
+    h+='<div class="node sh-'+esc(t.shape||"box")+'" style="border-color:'+t.hex+'">';
+    h+=  '<div class="node-h"><span class="node-n" style="background:'+t.hex+'">'+(i+1)+'</span>';
+    h+=  '<span class="node-t">'+(s.title?esc(s.title):"（工程名未入力）")+'</span>';
+    h+=  (s.who?'<span class="node-w">'+esc(s.who)+'</span>':"")+'</div>';
+    if(s.desc) h+='<div class="node-d">'+esc(s.desc)+'</div>';
+    if(isDecision(s.type) && (s.yes||s.no)){
+      h+='<div class="branches"><div class="br br-y"><b>はい</b>'+esc(s.yes||"—")+'</div><div class="br br-n"><b>いいえ</b>'+esc(s.no||"—")+'</div></div>';
+    }
+    h+='</div>';
+  });
+  h+='</div>';
+
+  h+='<div class="legend">';
+  conf.types.forEach(function(t){ h+='<span><i style="background:'+t.hex+'"></i>'+esc(t.label)+'</span>'; });
+  h+='</div>';
+  h+='<div class="doc-f">※本フローは院内の業務手順を示すものです。実際の対応は状況に応じて医師・責任者の判断を優先してください。<br>※患者さんの個人情報は記載しないでください。</div>';
+  $("prevWrap").innerHTML=h;
+}
+
+function render(){ renderList(); renderPreview(); saveDoc(); }
+
+/* ---------------- Mermaid ---------------- */
+function toMermaid(){
+  var L=["flowchart TD"], q=function(s){ return String(s||"").replace(/["\[\]{}()|]/g," ").replace(/\n/g," ").trim(); };
+  state.steps.forEach(function(s,i){
+    var t=typeOf(s.type), id="S"+i, label=q(s.title||t.label);
+    if(s.who) label+="<br>（"+q(s.who)+"）";
+    if(t.shape==="dashed") L.push("  "+id+'{"'+label+'"}');
+    else if(t.shape==="round") L.push("  "+id+'(["'+label+'"])');
+    else L.push("  "+id+'["'+label+'"]');
+  });
+  state.steps.forEach(function(s,i){
+    if(i===state.steps.length-1) return;
+    var a="S"+i,b="S"+(i+1);
+    if(isDecision(s.type)){
+      L.push("  "+a+" -->|はい| "+b);
+      if(s.no){ L.push("  "+a+'_no["'+q(s.no)+'"]'); L.push("  "+a+" -->|いいえ| "+a+"_no"); }
+    } else L.push("  "+a+" --> "+b);
+  });
+  return L.join("\n");
+}
+
+/* ---------------- 設定 ---------------- */
+var SHAPES=[{v:"box",l:"通常"},{v:"round",l:"角丸"},{v:"dashed",l:"破線（判断）"}];
+function renderConf(){
+  var h="";
+  conf.types.forEach(function(t,i){
+    h+='<div class="row"><input class="sw" type="color" value="'+esc(t.hex)+'" data-ct="'+i+'" data-k="hex">'
+     + '<input type="text" value="'+esc(t.label)+'" data-ct="'+i+'" data-k="label" placeholder="表示名">'
+     + '<select data-ct="'+i+'" data-k="shape">';
+    SHAPES.forEach(function(sh){ h+='<option value="'+sh.v+'"'+(((t.shape||"box")===sh.v)?" selected":"")+'>'+sh.l+'</option>'; });
+    h+='</select><button class="iop" data-delt="'+i+'">✕</button></div>';
+  });
+  $("confTypes").innerHTML=h;
+
+  h="";
+  conf.who.forEach(function(w,i){ h+='<div class="row"><input type="text" value="'+esc(w)+'" data-cw="'+i+'"><button class="iop" data-delw="'+i+'">✕</button></div>'; });
+  $("confWho").innerHTML=h;
+
+  h="";
+  conf.templates.forEach(function(t,i){
+    h+='<div class="tplrow"><b>'+esc(t.name)+'</b><span>'+(t.steps?t.steps.length:0)+'工程</span>'
+     + '<button class="btn btn-s" data-tplload="'+i+'">読み込む</button>'
+     + '<button class="btn btn-s btn-d" data-tpldel="'+i+'">削除</button></div>';
+  });
+  if(!conf.templates.length) h='<div class="empty">テンプレートがありません。</div>';
+  $("confTpl").innerHTML=h;
+
+  buildDatalists();
+}
+function buildDatalists(){
+  var e=$("whoList"); if(e) e.remove();
+  var dl=document.createElement("datalist"); dl.id="whoList";
+  conf.who.forEach(function(v){ var o=document.createElement("option"); o.value=v; dl.appendChild(o); });
+  document.body.appendChild(dl);
+}
+function confToJs(){
+  return "/* 業務フロー作成ツール ─ 設定ファイル\n"
+       + "   ツールの「設定」画面 →「設定を書き出す」で生成されます。\n"
+       + "   このファイルをまるごと貼り替えると、全員の初期設定が変わります。 */\n\n"
+       + "var SAKURA_FLOW_CONFIG = " + JSON.stringify(conf, null, 2) + ";\n";
+}
+
+/* ---------------- イベント ---------------- */
+["title","dept","ver","date","author","purpose"].forEach(function(k){
+  var el=$("m"+k.charAt(0).toUpperCase()+k.slice(1));
+  el.addEventListener("input", function(){ state.meta[k]=el.value; renderPreview(); saveDoc(); });
+});
+function syncMeta(){
+  ["title","dept","ver","date","author","purpose"].forEach(function(k){
+    $("m"+k.charAt(0).toUpperCase()+k.slice(1)).value = state.meta[k]||"";
+  });
+}
+
+$("list").addEventListener("click", function(e){
+  var b=e.target.closest("[data-up],[data-dn],[data-del],[data-tog]"); if(!b) return;
+  var i;
+  if(b.hasAttribute("data-up")){ i=+b.getAttribute("data-up"); if(i>0){ var x=state.steps[i]; state.steps[i]=state.steps[i-1]; state.steps[i-1]=x; if(state.sel===i)state.sel=i-1; else if(state.sel===i-1)state.sel=i; render(); } return; }
+  if(b.hasAttribute("data-dn")){ i=+b.getAttribute("data-dn"); if(i<state.steps.length-1){ var y=state.steps[i]; state.steps[i]=state.steps[i+1]; state.steps[i+1]=y; if(state.sel===i)state.sel=i+1; else if(state.sel===i+1)state.sel=i; render(); } return; }
+  if(b.hasAttribute("data-del")){ i=+b.getAttribute("data-del"); if(confirm("この工程を削除します。よろしいですか？")){ state.steps.splice(i,1); if(state.sel===i)state.sel=null; else if(state.sel>i)state.sel--; render(); } return; }
+  i=+b.getAttribute("data-tog"); state.sel=(state.sel===i)?null:i; render();
+});
+$("list").addEventListener("input", function(e){
+  var el=e.target, f=el.getAttribute("data-f"); if(!f) return;
+  var i=+el.getAttribute("data-i");
+  state.steps[i][f]=el.value;
+  if(f==="type") render(); else { renderPreview(); saveDoc(); }
+});
+
+$("btnAdd").addEventListener("click", function(){
+  var first = state.steps.length===0 ? (conf.types[0]&&conf.types[0].key) : null;
+  state.steps.push(newStep(first)); state.sel=state.steps.length-1; render();
+  var items=$("list").querySelectorAll(".item"); if(items.length) items[items.length-1].scrollIntoView({block:"nearest"});
+});
+$("btnClear").addEventListener("click", function(){
+  if(!state.steps.length) return;
+  if(confirm("すべての工程を削除します。よろしいですか？")){ state.steps=[]; state.sel=null; render(); }
+});
+$("btnPrint").addEventListener("click", function(){ showTab("flow"); window.print(); });
+
+function showTab(name){
+  document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("on", t.getAttribute("data-tab")===name); });
+  $("tab-flow").style.display=(name==="flow")?"":"none";
+  $("tab-conf").style.display=(name==="conf")?"":"none";
+  if(name==="conf") renderConf();
+}
+document.querySelector(".tabs").addEventListener("click", function(e){
+  var b=e.target.closest("[data-tab]"); if(b) showTab(b.getAttribute("data-tab"));
+});
+
+/* --- テンプレート --- */
+var dlgTpl=$("dlgTpl");
+$("btnTpl").addEventListener("click", function(){
+  var h="";
+  conf.templates.forEach(function(t,i){
+    h+='<button class="btn" style="text-align:left" data-tpl="'+i+'"><b>'+esc(t.name)+'</b><br><span style="font-weight:400;font-size:12.5px;color:var(--sub)">'+(t.steps?t.steps.length:0)+'工程</span></button>';
+  });
+  if(!conf.templates.length) h='<div class="empty">テンプレートがありません。設定画面で登録できます。</div>';
+  $("tplList").innerHTML=h; dlgTpl.showModal();
+});
+function loadTemplate(t){
+  state.meta=Object.assign({title:"",dept:"",ver:"1.0",date:todayStr(),author:state.meta.author||"",purpose:""}, clone(t.meta||{}));
+  if(!state.meta.date) state.meta.date=todayStr();
+  state.steps=(t.steps||[]).map(function(s){ return Object.assign(newStep(), clone(s)); });
+  state.sel=null; syncMeta(); render();
+}
+$("tplList").addEventListener("click", function(e){
+  var b=e.target.closest("[data-tpl]"); if(!b) return;
+  loadTemplate(conf.templates[+b.getAttribute("data-tpl")]); dlgTpl.close();
+});
+
+/* --- 設定編集 --- */
+function onTypeChange(e){
+  var el=e.target, i=el.getAttribute("data-ct"); if(i===null) return;
+  conf.types[+i][el.getAttribute("data-k")]=el.value; saveConf(); renderPreview(); renderList();
+}
+$("confTypes").addEventListener("input", onTypeChange);
+$("confTypes").addEventListener("change", onTypeChange);
+$("confTypes").addEventListener("click", function(e){
+  var b=e.target.closest("[data-delt]"); if(!b) return;
+  if(conf.types.length<=1){ alert("種類は1つ以上必要です。"); return; }
+  if(confirm("この種類を削除します。すでに使っている工程は先頭の種類に切り替わります。")){
+    var idx=+b.getAttribute("data-delt"), key=conf.types[idx].key;
+    conf.types.splice(idx,1);
+    state.steps.forEach(function(s){ if(s.type===key) s.type=conf.types[0].key; });
+    saveConf(); renderConf(); render();
+  }
+});
+$("addType").addEventListener("click", function(){
+  conf.types.push({key:"t"+Date.now().toString(36), label:"新しい種類", hex:"#8a6a4e", shape:"box"});
+  saveConf(); renderConf();
+});
+
+$("confWho").addEventListener("input", function(e){
+  var i=e.target.getAttribute("data-cw"); if(i===null) return;
+  conf.who[+i]=e.target.value; saveConf(); buildDatalists();
+});
+$("confWho").addEventListener("click", function(e){
+  var b=e.target.closest("[data-delw]"); if(!b) return;
+  conf.who.splice(+b.getAttribute("data-delw"),1); saveConf(); renderConf();
+});
+$("addWho").addEventListener("click", function(){ conf.who.push(""); saveConf(); renderConf(); });
+
+$("confTpl").addEventListener("click", function(e){
+  var b=e.target.closest("[data-tplload],[data-tpldel]"); if(!b) return;
+  if(b.hasAttribute("data-tplload")){ loadTemplate(conf.templates[+b.getAttribute("data-tplload")]); showTab("flow"); return; }
+  if(confirm("このテンプレートを削除します。よろしいですか？")){ conf.templates.splice(+b.getAttribute("data-tpldel"),1); saveConf(); renderConf(); }
+});
+$("addTpl").addEventListener("click", function(){
+  if(!state.steps.length){ alert("先にフローを作成してください。"); return; }
+  var name=prompt("テンプレート名を入力してください", state.meta.title || "新しいテンプレート");
+  if(name===null) return;
+  conf.templates.push({ name:name||"名称未設定", meta:clone(state.meta), steps:clone(state.steps) });
+  saveConf(); renderConf(); alert("テンプレートに登録しました。");
+});
+
+$("btnResetConf").addEventListener("click", function(){
+  if(confirm("設定を config.js の内容に戻します。この画面で加えた変更は失われます。よろしいですか？")){
+    conf=clone(BASE); saveConf(); renderConf(); render();
+  }
+});
+
+var dlgConf=$("dlgConf");
+$("btnExportConf").addEventListener("click", function(){ $("confArea").value=confToJs(); dlgConf.showModal(); });
+$("btnCopyConf").addEventListener("click", function(){ copyFrom("confArea"); });
+$("btnDlConf").addEventListener("click", function(){ dl("config.js", confToJs(), "text/javascript"); });
+
+/* --- JSON --- */
+var dlgJson=$("dlgJson");
+$("btnJson").addEventListener("click", function(){ $("jsonArea").value=JSON.stringify({meta:state.meta,steps:state.steps},null,2); dlgJson.showModal(); });
+$("btnLoadJson").addEventListener("click", function(){
+  try{
+    var d=JSON.parse($("jsonArea").value); if(!d||!Array.isArray(d.steps)) throw 0;
+    state.meta=Object.assign({title:"",dept:"",ver:"",date:"",author:"",purpose:""}, d.meta||{});
+    state.steps=d.steps.map(function(s){ return Object.assign(newStep(), s); });
+    state.sel=null; syncMeta(); render(); dlgJson.close();
+  }catch(e){ alert("読み込めませんでした。JSONの内容をご確認ください。"); }
+});
+function dl(name, text, mime){
+  var blob=new Blob([text],{type:mime||"application/json"});
+  var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); },1000);
+}
+$("btnDl").addEventListener("click", function(){
+  var name=(state.meta.title||"業務フロー").replace(/[\\\/:*?"<>|]/g,"_");
+  dl(name+".json", JSON.stringify({meta:state.meta,steps:state.steps},null,2));
+});
+$("btnUp").addEventListener("click", function(){ $("fileIn").click(); });
+$("fileIn").addEventListener("change", function(){
+  var f=this.files&&this.files[0]; if(!f) return;
+  var r=new FileReader(); r.onload=function(){ $("jsonArea").value=r.result; }; r.readAsText(f); this.value="";
+});
+
+/* --- Mermaid --- */
+var dlgMmd=$("dlgMmd");
+$("btnMermaid").addEventListener("click", function(){ $("mmdArea").value="```mermaid\n"+toMermaid()+"\n```"; dlgMmd.showModal(); });
+$("btnCopyMmd").addEventListener("click", function(){ copyFrom("mmdArea"); });
+function copyFrom(id){
+  var ta=$(id); ta.removeAttribute("readonly"); ta.select();
+  var ok=false; try{ ok=document.execCommand("copy"); }catch(e){}
+  ta.setAttribute("readonly","readonly");
+  if(!ok && navigator.clipboard){ navigator.clipboard.writeText(ta.value).then(function(){ alert("コピーしました"); }); }
+  else alert(ok?"コピーしました":"コピーできませんでした。手動で選択してコピーしてください。");
+}
+
+document.addEventListener("click", function(e){
+  var b=e.target.closest("[data-close]"); if(b){ var d=b.closest("dialog"); if(d) d.close(); }
+});
+
+/* ---------------- 初期化 ---------------- */
+buildDatalists();
+loadDoc();
+syncMeta();
+render();
+
+}
+</script>
+</body>
+</html>
